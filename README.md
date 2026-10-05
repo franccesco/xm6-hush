@@ -55,11 +55,14 @@ cp .build/out/Products/Release/xm6-volume ~/.local/bin/xm6-volume
 codesign --force --sign - ~/.local/bin/xm6-volume
 ```
 
-Then create a launch agent at `~/Library/LaunchAgents/com.local.xm6volume.plist` that runs `~/.local/bin/xm6-volume` with `RunAtLoad` and `KeepAlive`, logging to `~/Library/Logs/xm6-volume.log`, and load it:
+Then install the sample launch agent, [`com.local.xm6volume.plist`](com.local.xm6volume.plist). launchd doesn't expand `~` or `$HOME`, so the sample uses `/Users/YOUR_USERNAME` and the `sed` below fills in your home directory. To change the volume, add `--volume` and its value as extra `<string>` entries in `ProgramArguments`.
 
 ```sh
+sed "s#/Users/YOUR_USERNAME#$HOME#g" com.local.xm6volume.plist > ~/Library/LaunchAgents/com.local.xm6volume.plist
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.local.xm6volume.plist
 ```
+
+The agent logs to `~/Library/Logs/xm6-volume.log`.
 
 To install a new build, stop the agent first, otherwise two processes compete for the headset:
 
